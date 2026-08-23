@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Order {{ order.order_id }} | CBE Payment Settlement{% endblock %}
+
+{% block content %}
+<div style="max-width: 750px; margin: 0 auto;">
+
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 0.4rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">ORDER REF: {{ order.order_id }}</span>
+        <h1 style="font-size: 2.2rem; font-weight: 800; margin-top: 0.75rem; color: white;">Payment Instructions</h1>
+    </div>
+
+    <!-- Status Banner -->
+    {% if order.payment_status == 'VERIFIED_PAID' %}
+    <div style="background: rgba(16, 185, 129, 0.2); border: 2px solid #10b981; border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 2rem;">
+        <h2 style="color: #34d399; font-weight: 800; margin-bottom: 0.5rem;">🎉 Payment Verified & Settlement Complete!</h2>
+        <p style="color: #e2e8f0; font-size: 0.95rem;">Funds logged for transfer to Bank of Abyssinia (BOA) Account <strong>{{ BOA_ACCOUNT_NUMBER }}</strong>.</p>
+    </div>
+
+    <!-- Unlocked Digital Content Box -->
+    <div class="card" style="border-color: #10b981; background: rgba(6, 78, 59, 0.3); margin-bottom: 2rem;">
+        <h3 style="color: #34d399; font-weight: 700; margin-bottom: 0.5rem;">🔓 Unlocked Full PDF E-Book & Digital Asset:</h3>
+        <p style="font-size: 1rem; color: white; margin-bottom: 1rem; font-weight: 600;">{{ order.product.name }}</p>
+
+        {% if order.product.pdf_file %}
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+            <a href="{{ order.product.pdf_file.url }}" download class="btn-success" style="padding: 0.85rem 1.5rem; font-size: 1rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                📥 Download Official PDF File Directly
+            </a>
+            <a href="{{ order.product.pdf_file.url }}" target="_blank" class="btn-primary" style="padding: 0.85rem 1.5rem; font-size: 1rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                👁️ Open & Read PDF in New Tab
+            </a>
+        </div>
+
+        <div style="border: 2px solid #10b981; border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem; background: #ffffff;">
+            <iframe src="{{ order.product.pdf_file.url }}" width="100%" height="480px" style="border: none;">
+                <p>Your browser does not support inline PDFs. <a href="{{ order.product.pdf_file.url }}">Click here to download the PDF e-book directly.</a></p>
+            </iframe>
+        </div>
+        {% endif %}
+
+        <div style="background: #0f172a; padding: 1.25rem; border-radius: 8px; font-family: monospace; color: #a7f3d0; white-space: pre-line; border: 1px solid rgba(16, 185, 129, 0.3); word-break: break-all; max-height: 250px; overflow-y: auto;" id="unlocked-content">{{ unlocked_content|default:order.product.content_delivery }}</div>
+        <button class="btn-primary" style="margin-top: 1rem; width: 100%; justify-content: center; background: rgba(30, 41, 59, 0.8);" onclick="copyText('unlocked-content', 'E-Book Text')">Copy E-Book Plain Text</button>
+    </div>
+
+
+
+    {% elif order.payment_status == 'UNDER_VERIFICATION' %}
+    <div style="background: rgba(245, 158, 11, 0.2); border: 2px solid #f59e0b; border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 2rem;">
+        <h2 style="color: #fbbf24; font-weight: 800; margin-bottom: 0.5rem;">⏳ Payment Under Verification</h2>
+        <p style="color: #e2e8f0; font-size: 0.95rem;">Submitted BOA Reference: <strong style="font-family: monospace; background: #1e293b; padding: 0.2rem 0.5rem; border-radius: 4px;">{{ order.cbe_ref_number }}</strong></p>
+        <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.5rem;">Admin is matching your payment against Bank of Abyssinia Account <strong>{{ BOA_ACCOUNT_NUMBER }}</strong>.</p>
+    </div>
+    {% endif %}
+
+    {% if order.payment_status != 'VERIFIED_PAID' %}
+    <!-- BOA Direct Transfer Instructions -->
+    <div class="form-card" style="margin-top: 0;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: white;">🏦 Step 1: Transfer Exact Amount to Bank of Abyssinia</h3>
+        
+        <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="color: var(--text-secondary);">Bank Name:</span>
+                <strong style="color: white;">{{ BOA_BANK_NAME }}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="color: var(--text-secondary);">Account Name:</span>
+                <strong style="color: white;">{{ BOA_ACCOUNT_NAME }}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span style="color: var(--text-secondary);">Account Number:</span>
+                <span class="cbe-acc-badge" id="cbe-target-acc">{{ BOA_ACCOUNT_NUMBER }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-top: 1px dashed var(--border-color); padding-top: 0.75rem; margin-top: 0.75rem;">
+                <span style="color: var(--text-secondary);">Total to Send:</span>
+                <strong style="color: #10b981; font-size: 1.4rem;">{{ order.amount }} ETB</strong>
+            </div>
+        </div>
+
+        <button class="btn-primary" style="width: 100%; justify-content: center; margin-bottom: 1.5rem;" onclick="copyText('cbe-target-acc', 'BOA Account Number')">Copy BOA Account Number ({{ BOA_ACCOUNT_NUMBER }})</button>
+
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: white;">📝 Step 2: Submit BOA Transaction Reference</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Open your Bank of Abyssinia Mobile App, transfer <strong>{{ order.amount }} ETB</strong> to <strong>{{ BOA_ACCOUNT_NUMBER }}</strong>, and enter the transaction reference below (e.g., BOA12345678 or FT123456):</p>
+
+        <form action="{% url 'order_status' order_id=order.order_id %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">BOA Reference / Transaction ID</label>
+                <input type="text" name="cbe_ref_number" class="form-control" placeholder="e.g. BOA260823XXXX or FT987654" value="{{ order.cbe_ref_number|default:'' }}" required>
+            </div>
+            <button type="submit" class="btn-success" style="width: 100%; justify-content: center; padding: 0.85rem;">
+                Verify & Unlock Digital Product Now →
+            </button>
+        </form>
+    </div>
+    {% endif %}
+
+
+    <div style="text-align: center; margin-top: 2rem;">
+        <a href="{% url 'index' %}" style="color: #94a3b8; text-decoration: none;">← Return to Store Front</a>
+    </div>
+
+</div>
+{% endblock %}
