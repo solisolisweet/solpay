@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}Rent-a-Store & Reverse Buyer Request Marketplace{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2.5rem; text-align: center;">
+    <span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 0.4rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">🔄 REVERSE MARKETPLACE & STORE RENTALS</span>
+    <h1 style="font-size: 2.4rem; font-weight: 800; color: white; margin-top: 0.75rem;">Rent a Store & Direct Buyer Demand Market</h1>
+    <p style="color: var(--text-secondary); max-width: 700px; margin: 0.5rem auto 0;">Buyers load products they want to buy, sellers order/fulfill them directly via phone & BOA Account {{ boa_account }}. Sellers can also rent active vendor stores!</p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+
+    <!-- Section 1: Buyer Loads Their Product Request -->
+    <div class="form-card" style="margin: 0; max-width: 100%;">
+        <h2 style="font-size: 1.3rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">📥 Buyers: Load Your Product Request</h2>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Want a specific digital product, software, e-book, or custom phone service? Load your request below and verified sellers will fulfill it directly for you.</p>
+
+        <form action="{% url 'post_buyer_request' %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Your Name</label>
+                <input type="text" name="buyer_name" class="form-control" placeholder="e.g. Bethlehem" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number (For Phone Delivery & Payment)</label>
+                <input type="tel" name="buyer_phone" class="form-control" placeholder="0911223344" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Product / Service You Want</label>
+                <input type="text" name="product_title" class="form-control" placeholder="e.g., Python Web Scraping Script or Custom Logo Design" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Detailed Description</label>
+                <textarea name="description" class="form-control" rows="3" placeholder="Explain exact details of what you need delivered to your phone..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Your Budget (ETB)</label>
+                <input type="number" name="budget_etb" class="form-control" placeholder="e.g. 500" required>
+            </div>
+            <button type="submit" class="btn-success" style="width: 100%; justify-content: center; padding: 0.8rem;">
+                Load Product Request Now →
+            </button>
+        </form>
+    </div>
+
+    <!-- Section 2: Rent a Store Slot -->
+    <div class="form-card" style="margin: 0; max-width: 100%; border-color: rgba(16, 185, 129, 0.4);">
+        <h2 style="font-size: 1.3rem; font-weight: 700; color: #34d399; margin-bottom: 0.5rem;">🏪 Sellers: Rent a Storefront (500 ETB/mo)</h2>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Rent a vendor slot to publish your digital products and phone services. Deposit 500 ETB to Bank of Abyssinia Account <strong>{{ boa_account }}</strong>.</p>
+
+        <form action="{% url 'rent_store' %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Store / Vendor Name</label>
+                <input type="text" name="store_name" class="form-control" placeholder="e.g. Addis Digital Tools" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Owner Name</label>
+                <input type="text" name="owner_name" class="form-control" placeholder="e.g. Dawit Tadesse" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" name="owner_phone" class="form-control" placeholder="0911223344" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">BOA Reference Number (500 ETB to {{ boa_account }})</label>
+                <input type="text" name="boa_ref_number" class="form-control" placeholder="e.g. BOA260823XXXX or FT987654" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.8rem; background: linear-gradient(135deg, #059669, #10b981);">
+                Rent Storefront (500 ETB) →
+            </button>
+        </form>
+    </div>
+
+</div>
+
+<!-- Section 3: Open Buyer Requests (Sellers Order & Fulfill Directly) -->
+<div class="card" style="margin-bottom: 3rem;">
+    <h2 style="font-size: 1.4rem; font-weight: 700; color: white; margin-bottom: 1rem;">📦 Open Buyer Product Requests (Sellers Fulfill Directly)</h2>
+    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">Sellers can review what buyers have loaded and submit direct phone/digital delivery offers.</p>
+
+    <div style="display: grid; gap: 1.5rem;">
+        {% for req in requests %}
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: 10px; padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <div>
+                    <span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">REQUEST #{{ req.id }}</span>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: white; margin-top: 0.3rem;">{{ req.product_title }}</h3>
+                </div>
+                <div style="text-align: right;">
+                    <span style="font-size: 1.4rem; font-weight: 800; color: #10b981;">{{ req.budget_etb }} ETB</span>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Buyer: {{ req.buyer_name }} ({{ req.buyer_phone }})</div>
+                </div>
+            </div>
+
+            <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 1rem; white-space: pre-line;">{{ req.description }}</p>
+
+            <!-- Seller Offer Submission Form for this Request -->
+            <div style="background: rgba(30, 41, 59, 0.8); border: 1px dashed var(--border-color); border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: #38bdf8; margin-bottom: 0.5rem;">⚡ Sellers: Order / Fulfill This Request Directly</h4>
+                
+                <form action="{% url 'submit_seller_offer' request_id=req.id %}" method="POST" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; align-items: end;">
+                    {% csrf_token %}
+                    <div>
+                        <label class="form-label" style="font-size: 0.8rem;">Seller Name</label>
+                        <input type="text" name="seller_name" class="form-control" style="padding: 0.5rem;" placeholder="Your Name" required>
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 0.8rem;">Seller Phone</label>
+                        <input type="tel" name="seller_phone" class="form-control" style="padding: 0.5rem;" placeholder="0911223344" required>
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 0.8rem;">Offer Price (ETB)</label>
+                        <input type="number" name="offer_price_etb" class="form-control" style="padding: 0.5rem;" value="{{ req.budget_etb }}" required>
+                    </div>
+                    <div style="grid-column: 1 / -1;">
+                        <label class="form-label" style="font-size: 0.8rem;">Phone Delivery / Download Notes</label>
+                        <input type="text" name="delivery_notes" class="form-control" style="padding: 0.5rem;" placeholder="e.g., Digital link ready for immediate delivery via SMS/WhatsApp..." required>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn-success" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Submit Seller Fulfill Offer</button>
+                    </div>
+                </form>
+
+                <!-- List existing seller offers -->
+                {% if req.seller_offers.all %}
+                <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                    <strong style="font-size: 0.85rem; color: #a7f3d0;">Submitted Seller Offers ({{ req.seller_offers.count }}):</strong>
+                    <ul style="list-style: none; margin-top: 0.5rem; font-size: 0.85rem;">
+                        {% for offer in req.seller_offers.all %}
+                        <li style="padding: 0.4rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); color: #e2e8f0;">
+                            <strong>{{ offer.seller_name }}</strong> ({{ offer.seller_phone }}) offered <span style="color: #10b981; font-weight: 700;">{{ offer.offer_price_etb }} ETB</span> — <em>{{ offer.delivery_notes }}</em>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+        {% empty %}
+        <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+            No buyer requests loaded yet. Use the form above to load your first product request!
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Section 4: Active Rented Vendor Stores -->
+<div class="card">
+    <h2 style="font-size: 1.3rem; font-weight: 700; color: white; margin-bottom: 1rem;">🏪 Active Rented Vendor Stores</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
+        {% for store in stores %}
+        <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #10b981; border-radius: 8px; padding: 1rem;">
+            <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">ACTIVE RENTAL</span>
+            <h3 style="font-size: 1.1rem; font-weight: 700; color: white; margin-top: 0.5rem;">{{ store.store_name }}</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Owner: {{ store.owner_name }}</p>
+            <p style="font-size: 0.85rem; color: #60a5fa;">Phone: {{ store.owner_phone }}</p>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 1.5rem; color: var(--text-secondary);">
+            No vendor stores rented yet. Rent the first storefront above for 500 ETB/month!
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
