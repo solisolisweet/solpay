@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}SolPay | High-Demand Digital Products & CBE Payments{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <span class="hero-tag">⚡ 100% Legal & Zero-Capital Earning Hub</span>
+    <h1>Instant Digital Assets & BOA Direct Settlement</h1>
+    <p>Get premium AI suites, business legal templates, and income guides. All payments clear directly into Bank of Abyssinia.</p>
+    
+    <div class="cbe-banner">
+        <span style="font-weight: 600; color: #a7f3d0;">🏦 Official Settlement Account (Bank of Abyssinia):</span>
+        <span class="cbe-acc-badge" id="cbe-acc-num">{{ BOA_ACCOUNT_NUMBER }}</span>
+        <button class="btn-primary" style="padding: 0.3rem 0.75rem; font-size: 0.8rem;" onclick="copyText('cbe-acc-num', 'BOA Account Number')">Copy Account</button>
+        <a href="{% url 'download_master_pdf' %}" class="btn-success" style="padding: 0.3rem 0.75rem; font-size: 0.8rem; text-decoration: none;">📥 Download Master PDF Sheet</a>
+    </div>
+
+</section>
+
+
+<!-- Category Filter -->
+<div style="display: flex; justify-content: center; gap: 0.75rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
+    <a href="{% url 'index' %}" class="btn-primary" style="{% if not selected_category %}background: #3b82f6;{% else %}background: rgba(30, 41, 59, 0.8); border: 1px solid var(--border-color); color: #94a3b8;{% endif %}">All Items</a>
+    <a href="?category=prompts" class="btn-primary" style="{% if selected_category == 'prompts' %}background: #3b82f6;{% else %}background: rgba(30, 41, 59, 0.8); border: 1px solid var(--border-color); color: #94a3b8;{% endif %}">🤖 AI & Prompts</a>
+    <a href="?category=templates" class="btn-primary" style="{% if selected_category == 'templates' %}background: #3b82f6;{% else %}background: rgba(30, 41, 59, 0.8); border: 1px solid var(--border-color); color: #94a3b8;{% endif %}">📄 Legal & Contracts</a>
+    <a href="?category=guides" class="btn-primary" style="{% if selected_category == 'guides' %}background: #3b82f6;{% else %}background: rgba(30, 41, 59, 0.8); border: 1px solid var(--border-color); color: #94a3b8;{% endif %}">📘 Income Guides</a>
+    <a href="?category=software" class="btn-primary" style="{% if selected_category == 'software' %}background: #3b82f6;{% else %}background: rgba(30, 41, 59, 0.8); border: 1px solid var(--border-color); color: #94a3b8;{% endif %}">📊 Tools & Calculators</a>
+</div>
+
+<!-- Product Grid -->
+<div class="grid">
+    {% for product in products %}
+    <div class="card">
+        <div>
+            <div class="card-category">{{ product.get_category_display }}</div>
+            <h2 class="card-title">{{ product.name }}</h2>
+            <p style="font-size: 0.85rem; color: #a7f3d0; font-weight: 600; margin-bottom: 0.5rem;">✨ {{ product.tagline }}</p>
+            <p class="card-desc">{{ product.description }}</p>
+        </div>
+        <div class="card-footer">
+            <div class="price-tag">{{ product.price }} <span>ETB</span></div>
+            <a href="{% url 'product_detail' slug=product.slug %}" class="btn-success">Get Instant Download</a>
+        </div>
+    </div>
+    {% empty %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-secondary);">
+        <p>No products found in this category.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Live Sales Ticker Banner -->
+<div style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: white;">💰 Verified Platform Earnings</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary);">Direct settlements processed to Bank of Abyssinia Account {{ BOA_ACCOUNT_NUMBER }}</p>
+    </div>
+    <div style="font-size: 2rem; font-weight: 800; color: #10b981;">
+        {{ total_revenue }} <span style="font-size: 1rem; color: #94a3b8;">ETB Total</span>
+    </div>
+</div>
+
+{% endblock %}
