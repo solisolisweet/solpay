@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: solpay-monetization-hub
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt && python manage.py migrate && python manage.py seed_products && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn sol_project.wsgi:application --workers 2 --bind 0.0.0.0:$PORT --timeout 120"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        sync: false  # Set this to your Render domain, e.g.: solpay-monetization-hub.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: solpay-db
+          property: connectionString
+      - key: DASHBOARD_PASSWORD
+        sync: false  # Set a strong password in Render dashboard
+
+databases:
+  - name: solpay-db
+    plan: free
