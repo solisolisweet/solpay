@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Free Viral Traffic Generator | Telegram & WhatsApp Promos{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+        <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.4rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">📢 $0 COST MARKETING & AFFILIATE ENGINE</span>
+        <h1 style="font-size: 2.4rem; font-weight: 800; margin-top: 0.75rem; color: white;">Free Viral Traffic & Affiliate Link Generator</h1>
+        <p style="color: var(--text-secondary); max-width: 650px; margin: 0.5rem auto 0;">Copy these high-converting post templates or generate custom affiliate referral links to let partners sell for you!</p>
+    </div>
+
+    <!-- Affiliate Link Generator Form -->
+    <div class="card" style="margin-bottom: 2.5rem; border-color: rgba(59, 130, 246, 0.5); background: rgba(30, 41, 59, 0.9);">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">🤝 Create Your Custom Affiliate Link (Earn 30% Commission)</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Let promoters share your store link. When someone buys through an affiliate link, 30% is allocated to the promoter and 70% deposits to Bank of Abyssinia Account {{ BOA_ACCOUNT_NUMBER }}.</p>
+
+        <form action="{% url 'create_affiliate' %}" method="POST" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; align-items: end;">
+            {% csrf_token %}
+            <div>
+                <label class="form-label" style="font-size: 0.85rem;">Promoter Name</label>
+                <input type="text" name="name" class="form-control" placeholder="e.g. Samuel" required>
+            </div>
+            <div>
+                <label class="form-label" style="font-size: 0.85rem;">Custom Code</label>
+                <input type="text" name="ref_code" class="form-control" placeholder="e.g. SAM2026" required>
+            </div>
+            <div>
+                <label class="form-label" style="font-size: 0.85rem;">BOA Account / Phone</label>
+                <input type="text" name="phone_or_bank" class="form-control" placeholder="0911223344" required>
+            </div>
+            <div>
+                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">Create Link</button>
+            </div>
+        </form>
+    </div>
+
+
+    <!-- Promo 1: Telegram Channel Post -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 700; color: #38bdf8;">📱 Telegram Channel & Group Post Template</h3>
+            <button class="btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;" onclick="copyText('tg-promo-1', 'Telegram Promo')">Copy Promo Text</button>
+        </div>
+        <div style="background: #0f172a; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color); color: #e2e8f0; font-family: monospace; white-space: pre-line;" id="tg-promo-1">
+🔥 **BEST DIGITAL ASSETS & AI PROMPTS IN ETHIOPIA 2026** 🔥
+
+Save hundreds of hours with instant access to ready-to-use digital tools:
+🤖 1,500+ AI & ChatGPT Business Prompts Suite
+📄 Ethiopian Freelance Legal & Contract Templates
+📘 Zero-Capital Remote Income Master Guide
+📊 Ethiopian Tax & Pension Excel Calculator Tool
+
+⚡ **Instant Delivery via Direct BOA Payment:**
+🏦 Bank of Abyssinia (BOA): **96072775**
+
+👉 **Get Yours Instantly Here:** {{ base_url }}
+        </div>
+    </div>
+
+    <!-- Promo 2: WhatsApp Group Broadcast -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 700; color: #4ade80;">💬 WhatsApp Group & Direct Message Promo</h3>
+            <button class="btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;" onclick="copyText('wa-promo-1', 'WhatsApp Promo')">Copy WhatsApp Text</button>
+        </div>
+        <div style="background: #0f172a; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color); color: #e2e8f0; font-family: monospace; white-space: pre-line;" id="wa-promo-1">
+Hi friends! 👋 If you're looking for high-quality digital templates, AI prompt suites, or Ethiopian freelance legal contracts, check out this instant store:
+
+👉 {{ base_url }}
+
+Direct payment supported via Bank of Abyssinia (BOA Account: 96072775). Instant unlock right after transfer!
+        </div>
+    </div>
+
+    <!-- Promo 3: TikTok & Reels Video Script -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 700; color: #f472b6;">🎥 TikTok & Instagram Reels Script (30 Seconds)</h3>
+            <button class="btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;" onclick="copyText('tiktok-script', 'TikTok Script')">Copy Script</button>
+        </div>
+        <div style="background: #0f172a; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color); color: #e2e8f0; font-family: monospace; white-space: pre-line;" id="tiktok-script">
+[Hook]: "Stop wasting time writing contracts and ChatGPT prompts from scratch in Ethiopia!"
+[Body]: "Check out SolPay Digital Store. It has pre-made AI suites, legal contracts, and tax calculators designed specifically for Ethiopian freelancers and creators."
+[Call to Action]: "Visit {{ base_url }} and pay directly via Bank of Abyssinia Account 96072775 for instant download access!"
+        </div>
+    </div>
+
+
+</div>
+{% endblock %}
