@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} | Instant Purchase & Download{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <a href="{% url 'index' %}" style="color: #60a5fa; text-decoration: none; font-weight: 600; display: inline-block; margin-bottom: 1.5rem;">← Back to Store Catalog</a>
+
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-category">{{ product.get_category_display }}</div>
+        <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; color: white;">{{ product.name }}</h1>
+        <p style="font-size: 1.1rem; color: #a7f3d0; font-weight: 600; margin-bottom: 1rem;">✨ {{ product.tagline }}</p>
+        <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 1.5rem; white-space: pre-line;">{{ product.description }}</p>
+        
+        <div style="background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
+            <span style="color: var(--text-secondary);">Direct Unlock Price:</span>
+            <span class="price-tag" style="font-size: 1.8rem;">{{ product.price }} <span style="font-size: 1rem;">ETB</span></span>
+        </div>
+    </div>
+
+    <!-- Order Checkout Form -->
+    <div class="form-card">
+        <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; color: white;">⚡ Checkout & Get Access</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Enter your details to generate your CBE payment invoice. Access will be unlocked immediately upon payment verification.</p>
+
+        <form action="{% url 'create_order' product_id=product.id %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="buyer_name" class="form-control" placeholder="e.g., Abebe Bikila" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number (For CBE Verification)</label>
+                <input type="tel" name="buyer_phone" class="form-control" placeholder="0911223344" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email Address (Optional)</label>
+                <input type="email" name="buyer_email" class="form-control" placeholder="abebe@example.com">
+            </div>
+
+            <button type="submit" class="btn-success" style="width: 100%; justify-content: center; padding: 0.9rem; font-size: 1.1rem; margin-top: 1rem;">
+                Proceed to Payment ({{ product.price }} ETB) →
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
