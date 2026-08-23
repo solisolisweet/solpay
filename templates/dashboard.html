@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Seller Revenue Dashboard | Bank of Abyssinia Account 96072775{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2.2rem; font-weight: 800; color: white;">📊 Seller Revenue & BOA Settlement Dashboard</h1>
+    <p style="color: var(--text-secondary);">Real-time revenue monitoring and settlement log targeting Bank of Abyssinia (Account: <strong>{{ BOA_ACCOUNT_NUMBER }}</strong>)</p>
+</div>
+
+<!-- Stats Metrics -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+    <div class="card" style="border-color: rgba(16, 185, 129, 0.4);">
+        <div style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">TOTAL VERIFIED EARNINGS</div>
+        <div style="font-size: 2.2rem; font-weight: 800; color: #10b981; margin: 0.5rem 0;">{{ total_revenue }} <span style="font-size: 1rem;">ETB</span></div>
+        <div style="font-size: 0.8rem; color: #a7f3d0;">Settled to BOA Account {{ BOA_ACCOUNT_NUMBER }}</div>
+    </div>
+    
+    <div class="card" style="border-color: rgba(245, 158, 11, 0.4);">
+        <div style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">PENDING VERIFICATIONS</div>
+        <div style="font-size: 2.2rem; font-weight: 800; color: #f59e0b; margin: 0.5rem 0;">{{ pending_count }}</div>
+        <div style="font-size: 0.8rem; color: #fde68a;">Awaiting BOA deposit match</div>
+    </div>
+
+    <div class="card" style="border-color: rgba(59, 130, 246, 0.4);">
+        <div style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">COMPLETED ORDERS</div>
+        <div style="font-size: 2.2rem; font-weight: 800; color: #3b82f6; margin: 0.5rem 0;">{{ completed_count }}</div>
+        <div style="font-size: 0.8rem; color: #bfdbfe;">Digital downloads unlocked</div>
+    </div>
+</div>
+
+<!-- Recent Orders Table -->
+<div class="card" style="margin-bottom: 3rem;">
+    <h2 style="font-size: 1.3rem; font-weight: 700; color: white; margin-bottom: 1.5rem;">📋 Order History & Verification Queue</h2>
+    
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+                    <th style="padding: 0.75rem 1rem;">Order ID</th>
+                    <th style="padding: 0.75rem 1rem;">Product</th>
+                    <th style="padding: 0.75rem 1rem;">Buyer & Phone</th>
+                    <th style="padding: 0.75rem 1rem;">BOA Ref</th>
+                    <th style="padding: 0.75rem 1rem;">Amount</th>
+                    <th style="padding: 0.75rem 1rem;">Status</th>
+                    <th style="padding: 0.75rem 1rem;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 1rem; font-family: monospace; font-weight: 700; color: #60a5fa;">{{ order.order_id }}</td>
+                    <td style="padding: 1rem; color: white;">{{ order.product.name }}</td>
+                    <td style="padding: 1rem; color: var(--text-secondary);">{{ order.buyer_name }}<br><small style="color: #64748b;">{{ order.buyer_phone }}</small></td>
+                    <td style="padding: 1rem; font-family: monospace; color: #a7f3d0;">{{ order.cbe_ref_number|default:"-" }}</td>
+                    <td style="padding: 1rem; font-weight: 700; color: #10b981;">{{ order.amount }} ETB</td>
+                    <td style="padding: 1rem;">
+                        {% if order.payment_status == 'VERIFIED_PAID' %}
+                            <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">VERIFIED</span>
+                        {% elif order.payment_status == 'UNDER_VERIFICATION' %}
+                            <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">PENDING</span>
+                        {% else %}
+                            <span style="background: rgba(148, 163, 184, 0.2); color: #94a3b8; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">UNPAID</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem;">
+                        {% if order.payment_status != 'VERIFIED_PAID' %}
+                            <a href="{% url 'verify_order_admin' order_id=order.order_id %}" class="btn-success" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">Verify Deposit</a>
+                        {% else %}
+                            <span style="color: #64748b; font-size: 0.8rem;">Logged to BOA</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No orders received yet. Share your store link on Telegram/WhatsApp to get instant sales!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- BOA Settlement Log -->
+<div class="card">
+    <h2 style="font-size: 1.3rem; font-weight: 700; color: white; margin-bottom: 1.5rem;">🏦 Bank of Abyssinia (BOA: {{ BOA_ACCOUNT_NUMBER }}) Settlement Log</h2>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+                    <th style="padding: 0.75rem 1rem;">Target BOA Account</th>
+                    <th style="padding: 0.75rem 1rem;">Amount</th>
+                    <th style="padding: 0.75rem 1rem;">Status</th>
+                    <th style="padding: 0.75rem 1rem;">Transaction Note</th>
+                    <th style="padding: 0.75rem 1rem;">Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payout in payouts %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 1rem; font-family: monospace; color: #60a5fa; font-weight: 700;">{{ payout.cbe_account }}</td>
+                    <td style="padding: 0.75rem 1rem; font-weight: 700; color: #10b981;">+{{ payout.amount }} ETB</td>
+                    <td style="padding: 0.75rem 1rem;"><span style="color: #34d399; font-weight: 600;">{{ payout.status }}</span></td>
+                    <td style="padding: 0.75rem 1rem; color: white;">{{ payout.transaction_note }}</td>
+                    <td style="padding: 0.75rem 1rem; color: var(--text-secondary);">{{ payout.timestamp|date:"M d, Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No payouts logged yet. Payments clear directly to Bank of Abyssinia Account {{ BOA_ACCOUNT_NUMBER }} upon verification.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}
